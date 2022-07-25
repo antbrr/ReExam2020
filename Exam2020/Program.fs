@@ -1,4 +1,5 @@
 module Exam2020_2
+
 //Part 1: Binary search trees
 
     type 'a bintree =
@@ -304,19 +305,29 @@ module Exam2020_2
     let rec filter f llst =
          let (head,tail) = step llst
          if f head then
-            Cons(fun () -> head, tail)
+            Cons(fun () -> head, filter f tail)
          else filter f tail
 
 (* Question 4.5 *)
 
-    let takeFirst (x: int) llst =
-        let rec aux acc counter =
+    let takeFirst (n: int) ll =
+        let rec aux acc counter ll' =
+            match counter with
+            | 0 -> List.rev(acc),ll'
+            | x ->
+                let(head,tail) = step ll'
+                aux (head :: acc) (x-1) tail
+        aux [] n ll
             
         
 
 (* Question 4.6 *)
 
-    let unfold _ = failwith "not implemented"
+    let rec unfold generator st =
+        Cons(fun () -> 
+            let (elem, state) = generator st
+            elem,(unfold generator state)
+            )
 
     (* Consider the following two implementations of Fibonacci sequences fibll1 and fibll2: *)
 
@@ -328,17 +339,17 @@ module Exam2020_2
 
         aux 0 1 x
 
-    (* Uncomment after you have implemented init and unfold *)
 
-(*
+
+
     let fibll1 = init fib
     let fibll2 = unfold (fun (acc1, acc2) -> (acc1, (acc2, acc1 + acc2))) (0, 1)
-  *)  
+   
     (* 
 
     Q: Both fibll1 and fibll2 correctly calculate a lazy list of Fibonacci numbers. 
        Which of these two lazy lists is the most efficient implementation and why?
     
-    A: <Your answer goes here>
+    A: fibll2 is fastest because it does not have to initialize the function every time. fibll1 is linear, whereas fibll2 is constant.
     
     *)
