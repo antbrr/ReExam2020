@@ -206,9 +206,16 @@ module Exam2020_2
         | x::xs               -> x :: foo xs)*)
 
     (* ONLY implement the one that is NOT already tail recursive *)
-
-    let fooTail _ = failwith "not implemented"
-    let bazTail _ = failwith "not implemented"
+    
+    let fooTail xs =
+        let rec aux c xs' =
+            match xs' with
+            | [] -> c []
+            | [x] -> c [x]
+            | x :: y :: xs when x > y -> aux (fun result -> c ( y :: result)) (x :: xs)
+            | x :: xs -> aux (fun result -> c( x :: result)) xs
+        aux id xs
+    
 
 (* 3: Big Integers *)
 
