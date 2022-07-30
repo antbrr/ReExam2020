@@ -81,17 +81,21 @@ module Exam2020_2
        Focus on what they do rather than how they do it.
 
     A: 
-    bar takes a list and returns true if the items in the list is in ascending order. Otherwise false.
-    baz takes a list, checks if it is in ascending order, and if not it calls foo to do the ordering
+    bar xs returns true if xs is in ascending order, false otherwise.
+    
+    baz xs returns xs' which is xs sorted in ascending order
    
 
 
     Q: What would be appropriate names for functions 
        foo, bar, and baz?
+       
+       These three functions implement bubble sort. This is not something you are
+        strictly required to know.
 
-    A: foo: sortList
-       bar: isSorted
-       baz: sortList2
+    A: foo: foo could be called bubble (for bubble sort) or propagateLargest, or largestToEnd, or something similar.
+       bar: isSortedInAscendingOrder
+       baz: baz could be called sort or bubbleSort
     
     *)
         
@@ -105,30 +109,32 @@ module Exam2020_2
     
     Q: Why does this happen, and where? 
 
-    A: This happens because they do not consider the case of the empty list. It happens at the function keyword at line 58 and 64.
+    A:Both foo and bar require that the argument lists are non-empty and the case where they
+       are empty is not covered by the pattern match. The compiler warns that this case
+       is not covered by either function.
 
 
     Q: For these particular three functions will this incomplete 
        pattern match ever cause problems for any possible execution of baz? 
        If yes, why; if no, why not.
 
-    A: No, not unless we call the functions with an empty list
+    A: No it will not. The function baz checks if its input list is empty and it will never
+       call either foo or bar with an empty list.
 
     *)
 
-    let foo2 =
+   let rec foo2 =
         function
         | []                  -> []
-        | [x]                 -> [x]
-        | x::y::xs when x > y -> y :: (foo (x::xs))
-        | x::xs               -> x :: foo xs
+        | x::y::xs when x > y -> y :: (foo2 (x::xs))
+        | x::xs               -> x :: foo2 xs
+    
     let bar2 =
         function
         | []           -> true
         | [x]          -> true
         | x :: y :: xs -> x <= y && bar (y :: xs)
 
-    (* Uncomment code to run after you have written foo2 and bar2 *)
     let rec baz2 =
       function
       | lst when bar2 lst -> lst
@@ -139,12 +145,6 @@ module Exam2020_2
 
     (* Consider this alternative definition of *)
 
-    let foo2copy =
-        function
-        | []                  -> []
-        | [x]                 -> [x]
-        | x::y::xs when x > y -> y :: (foo (x::xs))
-        | x::xs               -> x :: foo xs
     let rec foo3 =
       function 
       | [x]                 -> [x]
@@ -156,25 +156,10 @@ module Exam2020_2
     Q: Do the functions `foo` and `foo3` produce the same output for all possible inputs? 
        If yes, why; if no why not and provide a counter example.
 
-    A: No they wont since in foo3 it always hits the x :: xs case. So lets consider this call
-    
-    foo2 [4;8;7]
-    4 :: foo3 [8;7]
-    4 :: 7 :: foo3(8::[])
-    
-    4 :: 7 :: 8
-    
-    [4;7;8]
-    
-    But in the other case foo3 [4;8;7]
-    
-   4 :: foo3 [8;7]
-    4 :: 8 foo3[7]
-    
-    4 :: 8 :: 7
-    
-    [4;8;7]
-    *)
+    A: No, they do not. By swapping the second and third row in the pattern match the guard x > y is never run
+       as matches are always checked in order. The function foo3 will always return the same list that you give it
+       
+   *)
 
 (* Question 2.4 *)
 
@@ -184,26 +169,24 @@ module Exam2020_2
 
     (*
 
-    Q: The function foo or baz is not tail recursive. Which one and why?
+   Q: The function foo or baz is not tail recursive. Which one and why?
     
-    A: foo is not tail recursive let me demonstrate
-        foo [3;2;1]
-        
-        2 :: (foo (3 :: [1]))
-        
-        2 :: (foo [3;1]
-        
-        2 :: 1 :: 3 wtf
-        
-        
-        
-
-    *) (*let rec foo =
-        function
-        | []                  -> []
-        | [x]                 -> [x]
-        | x::y::xs when x > y -> y :: (foo (x::xs))
-        | x::xs               -> x :: foo xs)*)
+    A: foo is not tail recursive. This is because it has a cons operator chained on to the recursive call which has to be waited on to be evaluated
+    making foo not tail recursive.
+    
+    Let me show you with the call 
+    
+    foo [3;2;1] ->
+    
+    2 :: (foo (3::[1])) ->
+    
+    2 :: 1 :: [3] ->
+    
+    2 :: 1 :: 3 ->
+    
+    [2;1;3] 
+    
+  *)
 
     (* ONLY implement the one that is NOT already tail recursive *)
     
