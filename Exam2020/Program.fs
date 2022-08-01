@@ -123,7 +123,7 @@ module Exam2020_2
 
     *)
 
-   let rec foo2 =
+    let rec foo2 =
         function
         | []                  -> []
         | x::y::xs when x > y -> y :: (foo2 (x::xs))
